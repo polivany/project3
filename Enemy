@@ -1,0 +1,87 @@
+import java.util.Random;
+
+public class Enemy {
+	
+	// Declare variables called bugPicture and bugSplatPicture of type EZImage
+	private EZImage emenyImage;
+	int x,posx;
+	int y,posy; 					
+	EZImage Wall[];
+	int numWalls	;
+	
+	Enemy(String filename, EZImage walls[], int wallCount) {// enemy constructor takes wall array and wall count to determine where walls are
+		enemyImage = EZ.addImage(filename, posx, posy);//load enemy picture
+		Random randomGenerator = new Random(); //generates random position for sentinel
+		posx = randomGenerator .nextInt(1100);
+		posy = randomGenerator.nextInt(900);
+		x=posx;y=posy;  //variables to determine position of enemy
+		Wall = walls;   //variables to determine position of walls and collision
+		numWalls= wallCount;
+		setImagePosition(x,y);
+
+	}
+
+	public void setPosition(int posx, int posy){ //sets new position of enemy based on movement functions
+		x = posx; y=posy;
+		setImagePosition(x,y);
+	}
+	
+	private void setImagePosition(int posx, int posy) { //translates enemy picture to enemy position
+			enemyImage.translateTo(posx, posy);
+		}
+	
+	boolean checkCollision(int xstep, int ystep) { //checks for a collision with the wall
+		for(int i=0; i< numWalls; i++) {
+			if(Wall[i].isPointInElement(x+xstep, y+ystep)) {
+				return true;
+			}
+		}
+		return false;
+	}
+	
+	public void moveLeft(int step){ //move functions
+		x=x-step;
+		setImagePosition(x,y);
+	}
+	public void moveRight(int step){
+		x=x+step;
+		setImagePosition(x,y);
+	}
+	public void moveUp(int step){
+		y=y-step;
+		setImagePosition(x,y);
+	}
+	public void moveDown(int step) {
+		y=y+step;
+		setImagePosition(x,y);
+	}
+
+void go(int characterX, int characterY) { //function that tells enemy which way to move, takes in x,y parameters of character
+		// if the x position is greater than character, enemy go left 3
+		if (x > characterX) {
+			if(!checkCollision(-3,0))
+				moveLeft(3);
+				if(checkCollision(-3,0)) //if collision with wall, move back 1
+					moveLeft(-1);}
+		// if the x position is less than character, enemy go right 3
+		if (x < characterX) {
+			if(!checkCollision(3,0)) 
+				moveRight(3);
+				if(checkCollision(3,0)) //if collision with wall, move back 1
+				moveRight(-1);}
+		// if the y position is greater than character, enemy go up 3
+		if (y > characterY) {
+			if(!checkCollision(0,-3)) 
+				moveUp(3);
+				if(checkCollision(0,-3)) //if collision with wall, move back 1
+					moveUp(-1);}
+		// if the y position is less than character, enemy go down 3
+		if (y < characterY) {
+			if(!checkCollision(0,3)) 
+				moveDown(3);
+				if(checkCollision(0,3)) //if collision with wall, move back 1
+					moveDown(-1);}
+		
+	}
+
+}
