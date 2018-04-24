@@ -123,4 +123,6 @@ if (EZInteraction.isKeyDown('w')) {
 	if(checkCollision(8,0))
 	moveRight(0);
 
+		}
+	}
 }
