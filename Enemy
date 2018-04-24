@@ -2,8 +2,8 @@ import java.util.Random;
 
 public class Enemy {
 	
-	// Declare variables called bugPicture and bugSplatPicture of type EZImage
-	private EZImage emenyImage;
+	// Declare variables called enemyImage of type EZImage
+	private EZImage enemyImage;
 	int x,posx;
 	int y,posy; 					
 	EZImage Wall[];
@@ -29,6 +29,12 @@ public class Enemy {
 	private void setImagePosition(int posx, int posy) { //translates enemy picture to enemy position
 			enemyImage.translateTo(posx, posy);
 		}
+	public int getXCenter() {
+		return enemyImage.getXCenter();
+	}
+	public int getYCenter() {
+		return enemyImage.getYCenter();
+	}
 	
 	boolean checkCollision(int xstep, int ystep) { //checks for a collision with the wall
 		for(int i=0; i< numWalls; i++) {
