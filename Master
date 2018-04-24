@@ -1,0 +1,42 @@
+import java.io.FileReader;
+import java.util.Scanner;
+import java.util.Random;
+
+public class Master {
+	
+	public static void main(String[] args) throws java.io.IOException {
+
+			FileReader fr = new FileReader("map.txt");// generates new filereader in order to get the map displayed when
+														// initialized
+			Scanner fileScanner = new Scanner(fr);
+			EZImage[] walls = new EZImage[448];// creates an array for the amount of walls created
+			int width = fileScanner.nextInt();
+			int height = fileScanner.nextInt();
+			String inputText;
+
+			int count = 0;// allows a separate counter for amount of walls placed in order to keep the for
+							// loop from adding to the same array slots
+
+			EZ.initialize(1600, height * 10 - 10);
+			EZImage background = EZ.addImage("pqbg.png", EZ.getWindowWidth() / 2, EZ.getWindowHeight() / 2);
+			background.pushToBack();
+			for (int row = 0; row < height; row++) {//Builds my map by scanning through each character in my text file.
+
+				inputText = fileScanner.next();
+
+				for (int column = 0; column < width; column++) {
+
+					char wall = inputText.charAt(column);
+
+					if (wall == '#') {
+						walls[count] = EZ.addImage("wall.png", column * 10, row * 10);
+						count++;
+					}
+
+				}
+
+			}
+EZ.refreshScreen();
+fileScanner.close();			
+	}
+}
