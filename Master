@@ -34,9 +34,75 @@ public class Master {
 					}
 
 				}
-
+				
 			}
-EZ.refreshScreen();
-fileScanner.close();			
+			EZ.refreshScreen();
+			fileScanner.close();
+			
+			Random randomX = new Random();//initialize random variables for later use on speed, destinations, etc.
+			Random randomY = new Random();
+			
+			int pBarX = 1352;
+			int pBarY = 333;
+			
+			int rBarX = 1438;
+			int rBarY = 333;
+			
+			int gBarX = 1522;
+			int gBarY = 333;
+			
+			int potNum = 0;
+			
+			int pSpawnTimer = 30;
+			EZImage[] bars = new EZImage[15];
+			
+			Sorcerer sorc = new Sorcerer("sorcerer.png", 50, 50, 40, 60, 5, walls, 448);
+			Potion pPot = new Potion("purplePotion.png", 360, 360, 400, 400, walls, 448);
+			Potion rPot = new Potion("redPotion.png", 700, 360, 400, 400, walls, 448);
+			Potion gPot = new Potion("greenPotion.png", 640, 700, 400, 400, walls, 448);
+			
+			
+			while(true) {
+			
+			sorc.go();
+			pPot.go();
+			rPot.go();
+			gPot.go();
+			
+			if(pPot.isInside(sorc.x, sorc.y) ) {
+					pPot.collect();
+					bars[potNum] = EZ.addImage("bar.png", pBarX, pBarY);
+					pBarY -= 30;
+					potNum++;
+				}
+			if(pPot.caught) {
+			pPot.respawn();
+			}
+			
+			
+			if(rPot.isInside(sorc.x, sorc.y) ) {
+				rPot.collect();
+				bars[potNum] = EZ.addImage("bar.png", rBarX, rBarY);
+				rBarY -= 30;
+				potNum++;
+			}
+			if(rPot.caught) {
+				rPot.respawn();
+			}
+		
+			
+			if(gPot.isInside(sorc.x, sorc.y) ) {
+				gPot.collect();
+				bars[potNum] = EZ.addImage("bar.png", gBarX, gBarY);
+				gBarY -= 30;
+				potNum++;
+			}
+			if(gPot.caught) {
+				gPot.respawn();
+			}
+			
+		EZ.refreshScreen();}
+			
 	}
 }
+
