@@ -1,116 +1,159 @@
 import java.util.Random;
 
 public class Potion {
-	
+
 	private EZImage potionPicture;
-	EZImage[] Wall; 
+	EZImage[] Wall;
 	int wallCount = 0;
-	private int x, y;  					
-	private int destx, desty;			
-	private int rangex, rangey;			
-	
-	public Potion(String filename, int posx, int posy, int rx, int ry, EZImage walls[], int numwalls){
-		x=posx;y=posy;
-		rangex = rx; rangey = ry;
+	private int x, y;
+	private int permx, permy;
+	private int destx, desty;
+	private int rangex, rangey;
+	public boolean caught = false;
+	private int catchCount;
+
+	public Potion(String filename, int posx, int posy, int rx, int ry, EZImage walls[], int numwalls) {
+		x = posx;
+		y = posy;
+		permx = posx;
+		permy = posy;
+		rangex = rx;
+		rangey = ry;
 		Wall = walls;
-		wallCount= numwalls; 
+		wallCount = numwalls;
 		setRandomDirection();
 		potionPicture = EZ.addImage(filename, posx, posy);
-		setPotionImagePosition(x,y);
+		setPotionImagePosition(x, y);
+		
+		catchCount = 5;
+		caught = false;
 	}
-	
-	boolean checkCollision(int xstep, int ystep) {   //checks to see if the next step will touch the wall
-		for(int i=0; i<wallCount; i++) {
-			if(Wall[i].isPointInElement(x+xstep, y+ystep)) {
+
+	boolean checkCollision(int xstep, int ystep) { // checks to see if the next step will touch the wall
+		for (int i = 0; i < wallCount; i++) {
+			if (Wall[i].isPointInElement(x + xstep, y + ystep)) {
 				return true;
 			}
 		}
 		return false;
 	}
-	
-	public void setDestination(int posx, int posy){
-		destx = posx; desty = posy;
+
+	public void setDestination(int posx, int posy) {
+		destx = posx;
+		desty = posy;
 	}
-	
-	public void setRandomDirection(){
-		
+
+	public void setRandomDirection() {
+
 		// Make a random number generator
 		Random randomGenerator = new Random();
-		
+
 		// Get a random number from 0 to rangex and use that as the destination
 		int ranx = randomGenerator.nextInt(rangex);
-		
+
 		// Do the same for the y destination
-		int rany = randomGenerator.nextInt(rangey);		
-		
+		int rany = randomGenerator.nextInt(rangey);
+
 		// Actually set the destination
-		setDestination(ranx,rany);
+		setDestination(ranx, rany);
 	}
-	
-	public void go(){
-		
+
+	public void go() {
+
 		if (x > destx) {
-			if(!checkCollision(-1,0))
-			moveLeft(1);
-			if(checkCollision(-1,0))
+			if (!checkCollision(-1, 0))
+				moveLeft(1);
+			if (checkCollision(-1, 0))
 				setRandomDirection();
 		}
 		if (x < destx) {
-			if(!checkCollision(1,0)) 
+			if (!checkCollision(1, 0))
 				moveRight(1);
-			if(checkCollision(1,0))
+			if (checkCollision(1, 0))
 				setRandomDirection();
 		}
 		if (y > desty) {
-			if(!checkCollision(0,-1))        //checks for collision, if not the character can move
+			if (!checkCollision(0, -1)) // checks for collision, if not the character can move
 				moveUp(1);
-			if(checkCollision(0,-1))  //if there will be a collision, the character cannot move
-				setRandomDirection();		// If the y position of bug is greater than dest y then move up.
+			if (checkCollision(0, -1)) // if there will be a collision, the character cannot move
+				setRandomDirection(); // If the y position of bug is greater than dest y then move up.
 		}
 		if (y < desty) {
-			if(!checkCollision(0,1)) 
+			if (!checkCollision(0, 1))
 				moveDown(1);
-			if(checkCollision(0,1))
+			if (checkCollision(0, 1))
 				setRandomDirection();
 		}
-		
-		// If the position of the bug is exactly the same as the position of the destination
+
+		// If the position of the bug is exactly the same as the position of the
+		// destination
 		// then set a new random direction
 		if ((x == destx) && (y == desty)) {
 			setRandomDirection();
 		}
-		
+
 	}
-	public void setPosition(int posx, int posy){
-		x = posx; y=posy;
-		setPotionImagePosition(x,y);
+
+	public void setPosition(int posx, int posy) {
+		x = posx;
+		y = posy;
+		setPotionImagePosition(x, y);
 	}
-	
+
 	private void setPotionImagePosition(int posx, int posy) {
-			potionPicture.translateTo(posx, posy);
+		potionPicture.translateTo(posx, posy);
 	}
-	
-	public void moveLeft(int step){
-		x=x-step;
-		setPotionImagePosition(x,y);
+
+	public void moveLeft(int step) {
+		x = x - step;
+		setPotionImagePosition(x, y);
 	}
-	public void moveRight(int step){
-		x=x+step;
-		setPotionImagePosition(x,y);
+
+	public void moveRight(int step) {
+		x = x + step;
+		setPotionImagePosition(x, y);
 	}
-	public void moveUp(int step){
-		y=y-step;
-		setPotionImagePosition(x,y);
+
+	public void moveUp(int step) {
+		y = y - step;
+		setPotionImagePosition(x, y);
 	}
+
 	public void moveDown(int step) {
-		y=y+step;
-		setPotionImagePosition(x,y);
+		y = y + step;
+		setPotionImagePosition(x, y);
 	}
-	
+
 	public void caughtPotion() {
 		Random randomGenerator = new Random();
-		x = randomGenerator.nextInt(rangex);
-		y = randomGenerator.nextInt(rangey);
-		setPotionImagePosition(x,y);
+		x = randomGenerator.nextInt(rangex) + (permx/2);
+		y = randomGenerator.nextInt(rangey) + (permy/2);
+		setPotionImagePosition(x, y);
 	}
+
+	public boolean isInside(int posx, int posy) {
+
+		if (caught == true)
+			return false;
+		else
+			return potionPicture.isPointInElement(posx, posy);
+	}
+
+	public void collect() {
+		potionPicture.hide();
+		catchCount--;
+		caught = true;
+	}
+
+	public void respawn() {
+		if(catchCount > 0) {
+			caughtPotion();
+			caught = false;
+			potionPicture.show();
+		}
+		else
+			return;
+		
+	}
+
 }
