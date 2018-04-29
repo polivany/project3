@@ -2,8 +2,9 @@ import java.io.FileReader;
 import java.util.Scanner;
 import java.util.Random;
 
-public class PotionQuestMain {
+public class Master {
 	static int buttonPressed = 0;
+
 	public static void main(String[] args) throws java.io.IOException {
 
 		FileReader fr = new FileReader("map.txt");// generates new filereader in order to get the map displayed when
@@ -39,6 +40,10 @@ public class PotionQuestMain {
 		EZ.refreshScreen();
 		fileScanner.close();
 		Tree myTree = new Tree(640, 380);
+		EZImage end = EZ.addImage("treefinal.png", EZ.getWindowWidth() / 2, EZ.getWindowHeight() / 2);
+		end.hide();
+		EZImage cont = EZ.addImage("contButt.png", 200, 75);
+		cont.hide();
 		/////////////////////////////////////////////////////////////////////////////////
 		// Variables needed for potions
 		int pBarX = 1352;
@@ -51,6 +56,9 @@ public class PotionQuestMain {
 		int gBarY = 333;
 
 		int potNum = 0;
+		int gPotNum = 0;
+		int pPotNum = 0;
+		int rPotNum = 0;
 		///////////////////////////////////////////////////////////////////////////////
 		EZImage[] bars = new EZImage[15];
 
@@ -58,24 +66,26 @@ public class PotionQuestMain {
 		Potion pPot = new Potion("purplePotion.png", 360, 360, 1280, 800, walls, 448);
 		Potion rPot = new Potion("redPotion.png", 700, 360, 1280, 800, walls, 448);
 		Potion gPot = new Potion("greenPotion.png", 640, 700, 1280, 800, walls, 448);
-		String[] finalTree = {"tg1.png","tg2.png","tg3.png","tp1.png", "tp2.png", "tp3.png", "tr1.png","tr2.png","tr3.png"};
+		String[] finalTree = { "tg1.png", "tg2.png", "tg3.png", "tp1.png", "tp2.png", "tp3.png", "tr1.png", "tr2.png",
+				"tr3.png" };
 		FinalTree fTree = new FinalTree(finalTree, 1500, 640, 380);
-		//EZImage gameOver = EZ.addImage("defeat.png", EZ.getWindowWidth() / 2, EZ.getWindowHeight() / 2);
-		//gameOver.hide();
+		// EZImage gameOver = EZ.addImage("defeat.png", EZ.getWindowWidth() / 2,
+		// EZ.getWindowHeight() / 2);
+		// gameOver.hide();
 
 		////////////////////////////////////////////////////////////////////////////
 		// Dragon Summons
-		Enemy[] dragon = new Enemy[8];
+		enemy[] dragon = new enemy[8];
 
-		dragon[0] = new Enemy("enemy.png", walls, 448, 320, 200, 55, 54, 1);
-		dragon[1] = new Enemy("enemy.png", walls, 448, 960, 200, 55, 54, 1);
-		dragon[2] = new Enemy("enemy.png", walls, 448, 320, 600, 55, 54, 1);
-		dragon[3] = new Enemy("enemy.png", walls, 448, 960, 600, 55, 54, 1);
+		dragon[0] = new enemy("enemy.png", walls, 448, 320, 200, 55, 54, 1);
+		dragon[1] = new enemy("enemy.png", walls, 448, 960, 200, 55, 54, 1);
+		dragon[2] = new enemy("enemy.png", walls, 448, 320, 600, 55, 54, 1);
+		dragon[3] = new enemy("enemy.png", walls, 448, 960, 600, 55, 54, 1);
 
-		dragon[4] = new Enemy("enemy.png", walls, 448, 640, 200, 55, 54, 1);
-		dragon[5] = new Enemy("enemy.png", walls, 448, 640, 600, 55, 54, 1);
-		dragon[6] = new Enemy("enemy.png", walls, 448, 320, 400, 55, 54, 1);
-		dragon[7] = new Enemy("enemy.png", walls, 448, 960, 400, 55, 54, 1);
+		dragon[4] = new enemy("enemy.png", walls, 448, 640, 200, 55, 54, 1);
+		dragon[5] = new enemy("enemy.png", walls, 448, 640, 600, 55, 54, 1);
+		dragon[6] = new enemy("enemy.png", walls, 448, 320, 400, 55, 54, 1);
+		dragon[7] = new enemy("enemy.png", walls, 448, 960, 400, 55, 54, 1);
 		//////////////////////////////////////////////////////////////////////////////
 
 		/////////////////////////////////////////////////////////////////////////////
@@ -85,7 +95,7 @@ public class PotionQuestMain {
 		// enemy PGoblin = new enemy("goblin.png", walls, 448, 1265, 790, 55, 54, 1);
 
 		while (true) {
-			myTree.processStates();
+			
 			sorc.go();
 			pPot.go();
 			rPot.go();
@@ -101,13 +111,13 @@ public class PotionQuestMain {
 			dragon[7].patrolHori();
 
 			sorc.HPBar();
-			System.out.println(sorc.hp);
 
 			if (pPot.isInside(sorc.x, sorc.y)) {
 				pPot.collect();
 				bars[potNum] = EZ.addImage("bar.png", pBarX, pBarY);
 				pBarY -= 30;
 				potNum++;
+				pPotNum++;
 			}
 			if (pPot.caught) {
 				pPot.respawn();
@@ -118,6 +128,7 @@ public class PotionQuestMain {
 				bars[potNum] = EZ.addImage("bar.png", rBarX, rBarY);
 				rBarY -= 30;
 				potNum++;
+				rPotNum++;
 			}
 			if (rPot.caught) {
 				rPot.respawn();
@@ -128,6 +139,7 @@ public class PotionQuestMain {
 				bars[potNum] = EZ.addImage("bar.png", gBarX, gBarY);
 				gBarY -= 30;
 				potNum++;
+				gPotNum++;
 			}
 			if (gPot.caught) {
 				gPot.respawn();
@@ -135,8 +147,7 @@ public class PotionQuestMain {
 
 			for (int i = 0; i < 8; i++) {
 				if (dragon[i].isInside(sorc.x, sorc.y)) {
-					sorc.hp -= 10;
-					System.out.println("check");
+					sorc.hp -= 5;
 				}
 			}
 
@@ -149,25 +160,50 @@ public class PotionQuestMain {
 				rPot.Defeat();
 				pPot.Defeat();
 				gPot.Defeat();
-				//gameOver.show();
-			}
-			if(EZInteraction.wasKeyPressed('z')){
-				buttonPressed = 1;
-			}			
-			if(EZInteraction.wasKeyPressed('x')){
-				buttonPressed = 2;
-			}
-			if(EZInteraction.wasKeyPressed('c')){
-				buttonPressed = 3;
+				// gameOver.show();
 			}
 
-			if (buttonPressed >=3) {
+			if (pPotNum == 5) {
+				if (EZInteraction.wasKeyPressed('z')) {
+					myTree.processStates();
+					buttonPressed++;
+					pPotNum = 0;
+				}
+			}
+
+			if (rPotNum == 5) {
+				if (EZInteraction.wasKeyPressed('x')) {
+					myTree.processStates();
+					buttonPressed ++;
+					rPotNum = 0;
+				}
+			}
+
+			if (gPotNum == 5) {
+				if (EZInteraction.wasKeyPressed('c')) {
+					myTree.processStates();
+					buttonPressed++;
+					gPotNum = 0;
+				}
+			}
+
+			if (buttonPressed >= 3) {
 				for (int i = 0; i < 8; i++) {
 					dragon[i].Defeat();
 				}
+				sorc.hp = 100000;
 				myTree.hideTree();
 				fTree.go();
+				cont.show();
+				
+				if(EZInteraction.wasMouseLeftButtonReleased()) {
+					fTree.hide();
+					end.show();
+					end.pullToFront();
+				}
 			}
+			
+			
 			EZ.refreshScreen();
 
 		}
