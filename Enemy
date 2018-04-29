@@ -291,6 +291,7 @@ public class Enemy {
 	}
 	public void Defeat() {
 		enemyImage.hide();
+		enemyImage.translateTo(0, 0);
 	}
 	
 	public boolean isInside(int posx, int posy) {
