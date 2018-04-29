@@ -151,7 +151,7 @@ public class PotionQuestMain {
 				gPot.Defeat();
 				//gameOver.show();
 			}
-			if(EZInteraction.wasKeyPressed('w')){
+			if(EZInteraction.wasKeyPressed('z')){
 				buttonPressed = 1;
 			}			
 			if(EZInteraction.wasKeyPressed('x')){
