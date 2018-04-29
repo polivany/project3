@@ -59,6 +59,7 @@ public class Master {
 		int gPotNum = 0;
 		int pPotNum = 0;
 		int rPotNum = 0;
+		int hpCollection = 0;
 		///////////////////////////////////////////////////////////////////////////////
 		EZImage[] bars = new EZImage[15];
 
@@ -118,6 +119,7 @@ public class Master {
 				pBarY -= 30;
 				potNum++;
 				pPotNum++;
+				hpCollection++;
 			}
 			if (pPot.caught) {
 				pPot.respawn();
@@ -129,6 +131,7 @@ public class Master {
 				rBarY -= 30;
 				potNum++;
 				rPotNum++;
+				hpCollection++;
 			}
 			if (rPot.caught) {
 				rPot.respawn();
@@ -140,9 +143,17 @@ public class Master {
 				gBarY -= 30;
 				potNum++;
 				gPotNum++;
+				hpCollection++;
 			}
 			if (gPot.caught) {
 				gPot.respawn();
+			}
+			
+			if(sorc.hp < 600) {
+				if(hpCollection == 2) {
+					sorc.hp += 100;
+					hpCollection = 0;
+				}
 			}
 
 			for (int i = 0; i < 8; i++) {
