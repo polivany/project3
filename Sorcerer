@@ -147,26 +147,31 @@ public class Sorcerer {
 		if(hp/100 == 6) {
 			
 			hpbar.show();
+			M1HP.hide();
 		}
 		
 		if(hp/100 == 5) {
 			hpbar.hide();
 			M1HP.show();
+			M2HP.hide();
 		}
 		
 		if(hp/100 == 4) {
 			M1HP.hide();
 			M2HP.show();
+			M3HP.hide();
 		}
 		
 		if(hp/100 == 3) {
 			M2HP.hide();
 			M3HP.show();
+			M4HP.hide();
 		}
 		
 		if(hp/100 == 2) {
 			M3HP.hide();
 			M4HP.show();
+			M5HP.hide();
 		}
 		
 		if(hp/100 == 1) {
