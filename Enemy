@@ -23,7 +23,7 @@ public class Enemy {
 
 	int numWalls;
 
-	enemy(String filename, EZImage walls[], int wallCount, int spawnX, int spawnY, int Width, int Height, int steps) {
+	Enemy(String filename, EZImage walls[], int wallCount, int spawnX, int spawnY, int Width, int Height, int steps) {
 		
 		enemyImage = EZ.addImage(filename, posx, posy);// load enemy picture
 		Random randomGenerator = new Random(); // generates random position for sentinel
