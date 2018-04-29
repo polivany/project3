@@ -2,8 +2,8 @@ import java.io.FileReader;
 import java.util.Scanner;
 import java.util.Random;
 
-public class Master {
-	
+public class PotionQuestMain {
+	static int buttonPressed = 0;
 	public static void main(String[] args) throws java.io.IOException {
 
 		FileReader fr = new FileReader("map.txt");// generates new filereader in order to get the map displayed when
@@ -58,23 +58,24 @@ public class Master {
 		Potion pPot = new Potion("purplePotion.png", 360, 360, 1280, 800, walls, 448);
 		Potion rPot = new Potion("redPotion.png", 700, 360, 1280, 800, walls, 448);
 		Potion gPot = new Potion("greenPotion.png", 640, 700, 1280, 800, walls, 448);
-
+		String[] finalTree = {"tg1.png","tg2.png","tg3.png","tp1.png", "tp2.png", "tp3.png", "tr1.png","tr2.png","tr3.png"};
+		FinalTree fTree = new FinalTree(finalTree, 1500, 640, 380);
 		//EZImage gameOver = EZ.addImage("defeat.png", EZ.getWindowWidth() / 2, EZ.getWindowHeight() / 2);
 		//gameOver.hide();
 
 		////////////////////////////////////////////////////////////////////////////
 		// Dragon Summons
-		enemy[] dragon = new enemy[8];
+		Enemy[] dragon = new Enemy[8];
 
-		dragon[0] = new enemy("enemy.png", walls, 448, 320, 200, 55, 54, 1);
-		dragon[1] = new enemy("enemy.png", walls, 448, 960, 200, 55, 54, 1);
-		dragon[2] = new enemy("enemy.png", walls, 448, 320, 600, 55, 54, 1);
-		dragon[3] = new enemy("enemy.png", walls, 448, 960, 600, 55, 54, 1);
+		dragon[0] = new Enemy("enemy.png", walls, 448, 320, 200, 55, 54, 1);
+		dragon[1] = new Enemy("enemy.png", walls, 448, 960, 200, 55, 54, 1);
+		dragon[2] = new Enemy("enemy.png", walls, 448, 320, 600, 55, 54, 1);
+		dragon[3] = new Enemy("enemy.png", walls, 448, 960, 600, 55, 54, 1);
 
-		dragon[4] = new enemy("enemy.png", walls, 448, 640, 200, 55, 54, 1);
-		dragon[5] = new enemy("enemy.png", walls, 448, 640, 600, 55, 54, 1);
-		dragon[6] = new enemy("enemy.png", walls, 448, 320, 400, 55, 54, 1);
-		dragon[7] = new enemy("enemy.png", walls, 448, 960, 400, 55, 54, 1);
+		dragon[4] = new Enemy("enemy.png", walls, 448, 640, 200, 55, 54, 1);
+		dragon[5] = new Enemy("enemy.png", walls, 448, 640, 600, 55, 54, 1);
+		dragon[6] = new Enemy("enemy.png", walls, 448, 320, 400, 55, 54, 1);
+		dragon[7] = new Enemy("enemy.png", walls, 448, 960, 400, 55, 54, 1);
 		//////////////////////////////////////////////////////////////////////////////
 
 		/////////////////////////////////////////////////////////////////////////////
@@ -84,7 +85,6 @@ public class Master {
 		// enemy PGoblin = new enemy("goblin.png", walls, 448, 1265, 790, 55, 54, 1);
 
 		while (true) {
-
 			myTree.processStates();
 			sorc.go();
 			pPot.go();
@@ -151,7 +151,23 @@ public class Master {
 				gPot.Defeat();
 				//gameOver.show();
 			}
+			if(EZInteraction.wasKeyPressed('w')){
+				buttonPressed = 1;
+			}			
+			if(EZInteraction.wasKeyPressed('x')){
+				buttonPressed = 2;
+			}
+			if(EZInteraction.wasKeyPressed('c')){
+				buttonPressed = 3;
+			}
 
+			if (buttonPressed >=3) {
+				for (int i = 0; i < 8; i++) {
+					dragon[i].Defeat();
+				}
+				myTree.hideTree();
+				fTree.go();
+			}
 			EZ.refreshScreen();
 
 		}
