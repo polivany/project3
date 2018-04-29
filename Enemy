@@ -1,93 +1,299 @@
 import java.util.Random;
+import java.lang.Math;
 
-public class Enemy {
-	
+public class enemy {
+
 	// Declare variables called enemyImage of type EZImage
 	private EZImage enemyImage;
-	int x,posx;
-	int y,posy; 					
+	int x, posx;
+	int y, posy;
+	int ctrlX = 0;
+	int ctrlY = 0;
+	private int destx, desty;
+	private int rangex, rangey;
+	public int permX, permY;
+	public boolean chase;
+	int spriteWidth; // Width of each sprite
+	int spriteHeight; // Height of each sprite
+	int direction = 0; // Direction character is walking in
+	int walkSequence = 0; // Walk sequence counter
+	int counter = 0;
+	int cycleSteps; // Number of steps before cycling to next animation step
 	EZImage Wall[];
-	int numWalls	;
-	
-	Enemy(String filename, EZImage walls[], int wallCount) {// enemy constructor takes wall array and wall count to determine where walls are
-		enemyImage = EZ.addImage(filename, posx, posy);//load enemy picture
-		Random randomGenerator = new Random(); //generates random position for sentinel
-		posx = randomGenerator .nextInt(1100);
-		posy = randomGenerator.nextInt(900);
-		x=posx;y=posy;  //variables to determine position of enemy
-		Wall = walls;   //variables to determine position of walls and collision
-		numWalls= wallCount;
-		setImagePosition(x,y);
+
+	int numWalls;
+
+	enemy(String filename, EZImage walls[], int wallCount, int spawnX, int spawnY, int Width, int Height, int steps) {
+		
+		enemyImage = EZ.addImage(filename, posx, posy);// load enemy picture
+		Random randomGenerator = new Random(); // generates random position for sentinel
+		posx = spawnX;
+		posy = spawnY;
+		permX = spawnX;
+		permY = spawnY;
+		rangex = 320;
+		rangey = 200;
+		chase = false;
+		spriteWidth = Width;
+		spriteHeight = Height;
+		cycleSteps = steps;
+		x = posx;
+		y = posy; // variables to determine position of enemy
+		Wall = walls; // variables to determine position of walls and collision
+		numWalls = wallCount;
+		setImagePosition(x, y);
 
 	}
 
-	public void setPosition(int posx, int posy){ //sets new position of enemy based on movement functions
-		x = posx; y=posy;
-		setImagePosition(x,y);
+	public void setPosition(int posx, int posy) { // sets new position of enemy based on movement functions
+		x = posx;
+		y = posy;
+		setImagePosition(x, y);
 	}
-	
-	private void setImagePosition(int posx, int posy) { //translates enemy picture to enemy position
-			enemyImage.translateTo(posx, posy);
-		}
+
+	private void setImagePosition(int posx, int posy) { // translates enemy picture to enemy position
+		enemyImage.translateTo(posx, posy);
+		// Show only a portion of the sprite sheet.
+		// Portion is determined by setFocus which takes 4 parameters:
+		// The 1st two numbers is the top left hand corner of the focus region.
+		// The 2nd two numbers is the bottom right hand corner of the focus region.
+		enemyImage.setFocus(walkSequence * spriteWidth, direction, walkSequence * spriteWidth + spriteWidth,
+				direction + spriteHeight);
+	}
+
 	public int getXCenter() {
 		return enemyImage.getXCenter();
 	}
+
 	public int getYCenter() {
 		return enemyImage.getYCenter();
 	}
-	
-	boolean checkCollision(int xstep, int ystep) { //checks for a collision with the wall
-		for(int i=0; i< numWalls; i++) {
-			if(Wall[i].isPointInElement(x+xstep, y+ystep)) {
+
+	boolean checkCollision(int xstep, int ystep) { // checks for a collision with the wall
+		for (int i = 0; i < numWalls; i++) {
+			if (Wall[i].isPointInElement(x + xstep, y + ystep)) {
 				return true;
 			}
 		}
 		return false;
 	}
-	
-	public void moveLeft(int step){ //move functions
-		x=x-step;
-		setImagePosition(x,y);
+
+	public void moveLeft(int step) { // move functions
+		x = x - step;
+
+		direction = spriteHeight;
+
+		if ((counter % cycleSteps) == 0) {
+			walkSequence--;
+			if (walkSequence < 0)
+				walkSequence = 3;
+		}
+		counter++;
+		setImagePosition(x, y);
 	}
-	public void moveRight(int step){
-		x=x+step;
-		setImagePosition(x,y);
+
+	public void moveRight(int step) {
+		x = x + step;
+		direction = spriteHeight * 2;
+
+		if ((counter % cycleSteps) == 0) {
+			walkSequence++;
+			if (walkSequence > 3)
+				walkSequence = 0;
+		}
+		counter++;
+
+		setImagePosition(x, y);
 	}
-	public void moveUp(int step){
-		y=y-step;
-		setImagePosition(x,y);
+
+	public void moveUp(int step) {
+		y = y - step;
+
+		direction = spriteHeight * 3;
+
+		if ((counter % cycleSteps) == 0) {
+			walkSequence--;
+			if (walkSequence < 0)
+				walkSequence = 3;
+		}
+		counter++;
+		setImagePosition(x, y);
 	}
+
 	public void moveDown(int step) {
-		y=y+step;
-		setImagePosition(x,y);
+		y = y + step;
+
+		direction = 0;
+
+		if ((counter % cycleSteps) == 0) { // cycles through 3 different pictures of the sprite sheet that reflect the
+											// character walking down
+			walkSequence++;
+			if (walkSequence > 3)
+				walkSequence = 0;
+		}
+		counter++;
+		setImagePosition(x, y);
 	}
 
-void go(int characterX, int characterY) { //function that tells enemy which way to move, takes in x,y parameters of character
+	void go(double characterX, double characterY, double rangeX, double rangeY) { // function that tells enemy which way
+																					// to move,
+		// takes in x,y parameters of character
 		// if the x position is greater than character, enemy go left 3
-		if (x > characterX) {
-			if(!checkCollision(-3,0))
-				moveLeft(3);
-				if(checkCollision(-3,0)) //if collision with wall, move back 1
-					moveLeft(-1);}
-		// if the x position is less than character, enemy go right 3
-		if (x < characterX) {
-			if(!checkCollision(3,0)) 
-				moveRight(3);
-				if(checkCollision(3,0)) //if collision with wall, move back 1
-				moveRight(-1);}
-		// if the y position is greater than character, enemy go up 3
-		if (y > characterY) {
-			if(!checkCollision(0,-3)) 
-				moveUp(3);
-				if(checkCollision(0,-3)) //if collision with wall, move back 1
-					moveUp(-1);}
-		// if the y position is less than character, enemy go down 3
-		if (y < characterY) {
-			if(!checkCollision(0,3)) 
-				moveDown(3);
-				if(checkCollision(0,3)) //if collision with wall, move back 1
-					moveDown(-1);}
-		
+
+		if (Math.hypot(characterX - permX, characterY - permY) < 320) {
+
+			if (x > characterX) {
+				if (!checkCollision(-3, 0))
+					moveLeft(3);
+				if (checkCollision(-3, 0)) // if collision with wall, move back 1
+					moveLeft(-1);
+			}
+			// if the x position is less than character, enemy go right 3
+			if (x < characterX) {
+				if (!checkCollision(3, 0))
+					moveRight(3);
+				if (checkCollision(3, 0)) // if collision with wall, move back 1
+					moveRight(-1);
+			}
+			// if the y position is greater than character, enemy go up 3
+			if (y > characterY) {
+				if (!checkCollision(0, -3))
+					moveUp(3);
+				if (checkCollision(0, -3)) // if collision with wall, move back 1
+					moveUp(-1);
+			}
+			// if the y position is less than character, enemy go down 3
+			if (y < characterY) {
+				if (!checkCollision(0, 3))
+					moveDown(3);
+				if (checkCollision(0, 3)) // if collision with wall, move back 1
+					moveDown(-1);
+			}
+		} else {
+			setRandomDirection();
+
+			if (x > destx) {
+				if (!checkCollision(-1, 0))
+					moveLeft(1);
+				if (checkCollision(-1, 0))
+					setRandomDirection();
+			}
+			if (x < destx) {
+				if (!checkCollision(1, 0))
+					moveRight(1);
+				if (checkCollision(1, 0))
+					setRandomDirection();
+			}
+			if (y > desty) {
+				if (!checkCollision(0, -1)) // checks for collision, if not the character can move
+					moveUp(1);
+				if (checkCollision(0, -1)) // if there will be a collision, the character cannot move
+					setRandomDirection(); // If the y position of bug is greater than dest y then move up.
+			}
+			if (y < desty) {
+				if (!checkCollision(0, 1))
+					moveDown(1);
+				if (checkCollision(0, 1))
+					setRandomDirection();
+			}
+
+			// If the position of the bug is exactly the same as the position of the
+			// destination
+			// then set a new random direction
+			if ((x == destx) && (y == desty)) {
+				setRandomDirection();
+			}
+		}
 	}
 
+	public void setRandomDirection() {
+
+		// Make a random number generator
+		Random randomGenerator = new Random();
+
+		// Get a random number from 0 to rangex and use that as the destination
+		int ranx = randomGenerator.nextInt(((permX + 320) - (permX - 320)) + 1) + (permX - 320);
+
+		// Do the same for the y destination
+		int rany = randomGenerator.nextInt(((permY + 200) - (permY - 200)) + 1) + (permY - 200);
+
+		// Actually set the destination
+		setDestination(ranx, rany);
+	}
+
+	public void setDestination(int posx, int posy) {
+		destx = posx;
+		desty = posy;
+	}
+
+	public void patrolVert() {
+
+		if (ctrlY == 0) {
+			if (!checkCollision(0, -8)) // checks for collision, if not the character can move
+				moveUp(4);
+			if (checkCollision(0, -8)) // if there will be a collision, the character cannot move
+				ctrlY = 1;
+		}
+		if (ctrlY == 1) {
+			if (!checkCollision(0, 8)) // checks for collision, if not the character can move
+				moveDown(4);
+			if (checkCollision(0, 8)) // if there will be a collision, the character cannot move
+				ctrlY = 0;
+		}
+
+	}
+
+	public void patrolHori() {
+		if (ctrlX == 0) {
+			if (!checkCollision(8, 0)) // checks for collision, if not the character can move
+				moveRight(4);
+			if (checkCollision(8, 0)) // if there will be a collision, the character cannot move
+				ctrlX = 1;
+		}
+		if (ctrlX == 1) {
+			if (!checkCollision(-8, 0)) // checks for collision, if not the character can move
+				moveLeft(4);
+			if (checkCollision(-8, 0)) // if there will be a collision, the character cannot move
+				ctrlX = 0;
+		}
+	}
+
+	public void chase(int potionX, int potionY) {
+		if(chase) {
+		if (x > potionX) {
+			if (!checkCollision(-10, 0))
+				moveLeft(10);
+			if (checkCollision(-10, 0)) // if collision with wall, move back 1
+				moveLeft(-1);
+		}
+		// if the x position is less than character, enemy go right 3
+		if (x < potionX) {
+			if (!checkCollision(10, 0))
+				moveRight(10);
+			if (checkCollision(10, 0)) // if collision with wall, move back 1
+				moveRight(-1);
+		}
+		// if the y position is greater than character, enemy go up 3
+		if (y > potionY) {
+			if (!checkCollision(0, -10))
+				moveUp(10);
+			if (checkCollision(0, -10)) // if collision with wall, move back 1
+				moveUp(-1);
+		}
+		// if the y position is less than character, enemy go down 3
+		if (y < potionY) {
+			if (!checkCollision(0, 10))
+				moveDown(10);
+			if (checkCollision(0, 10)) // if collision with wall, move back 1
+				moveDown(-1);
+		}
+		}
+	}
+	public void Defeat() {
+		enemyImage.hide();
+	}
+	
+	public boolean isInside(int posx, int posy) {
+			return enemyImage.isPointInElement(posx, posy);
+	}
 }
