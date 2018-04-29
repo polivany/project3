@@ -38,7 +38,7 @@ public class Master {
 		background.pushToBack();
 		EZ.refreshScreen();
 		fileScanner.close();
-
+		Tree myTree = new Tree(640, 380);
 		/////////////////////////////////////////////////////////////////////////////////
 		// Variables needed for potions
 		int pBarX = 1352;
@@ -85,6 +85,7 @@ public class Master {
 
 		while (true) {
 
+			myTree.processStates();
 			sorc.go();
 			pPot.go();
 			rPot.go();
