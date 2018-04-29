@@ -6,103 +6,154 @@ public class Master {
 	
 	public static void main(String[] args) throws java.io.IOException {
 
-			FileReader fr = new FileReader("map.txt");// generates new filereader in order to get the map displayed when
-														// initialized
-			Scanner fileScanner = new Scanner(fr);
-			EZImage[] walls = new EZImage[448];// creates an array for the amount of walls created
-			int width = fileScanner.nextInt();
-			int height = fileScanner.nextInt();
-			String inputText;
+		FileReader fr = new FileReader("map.txt");// generates new filereader in order to get the map displayed when
+													// initialized
+		Scanner fileScanner = new Scanner(fr);
+		EZImage[] walls = new EZImage[448];// creates an array for the amount of walls created
+		int width = fileScanner.nextInt();
+		int height = fileScanner.nextInt();
+		String inputText;
 
-			int count = 0;// allows a separate counter for amount of walls placed in order to keep the for
-							// loop from adding to the same array slots
+		int count = 0;// allows a separate counter for amount of walls placed in order to keep the for
+						// loop from adding to the same array slots
 
-			EZ.initialize(1600, height * 10 - 10);
-			EZImage background = EZ.addImage("pqbg.png", EZ.getWindowWidth() / 2, EZ.getWindowHeight() / 2);
-			background.pushToBack();
-			for (int row = 0; row < height; row++) {//Builds my map by scanning through each character in my text file.
+		EZ.initialize(1600, height * 10 - 10);
+		EZImage background = EZ.addImage("pqbg.png", EZ.getWindowWidth() / 2, EZ.getWindowHeight() / 2);
+		background.pushToBack();
+		for (int row = 0; row < height; row++) {// Builds my map by scanning through each character in my text file.
 
-				inputText = fileScanner.next();
+			inputText = fileScanner.next();
 
-				for (int column = 0; column < width; column++) {
+			for (int column = 0; column < width; column++) {
 
-					char wall = inputText.charAt(column);
+				char wall = inputText.charAt(column);
 
-					if (wall == '#') {
-						walls[count] = EZ.addImage("wall.png", column * 10, row * 10);
-						count++;
-					}
-
+				if (wall == '#') {
+					walls[count] = EZ.addImage("wall.png", column * 10, row * 10);
+					count++;
 				}
-				
 			}
-			EZ.refreshScreen();
-			fileScanner.close();
-			
-			Random randomX = new Random();//initialize random variables for later use on speed, destinations, etc.
-			Random randomY = new Random();
-			
-			int pBarX = 1352;
-			int pBarY = 333;
-			
-			int rBarX = 1438;
-			int rBarY = 333;
-			
-			int gBarX = 1522;
-			int gBarY = 333;
-			
-			int potNum = 0;
-			
-			int pSpawnTimer = 30;
-			EZImage[] bars = new EZImage[15];
-			
-			Sorcerer sorc = new Sorcerer("sorcerer.png", 50, 50, 40, 60, 5, walls, 448);
-			Potion pPot = new Potion("purplePotion.png", 360, 360, 400, 400, walls, 448);
-			Potion rPot = new Potion("redPotion.png", 700, 360, 400, 400, walls, 448);
-			Potion gPot = new Potion("greenPotion.png", 640, 700, 400, 400, walls, 448);
-			
-			
-			while(true) {
-			
+
+		}
+		background.pushToBack();
+		EZ.refreshScreen();
+		fileScanner.close();
+
+		/////////////////////////////////////////////////////////////////////////////////
+		// Variables needed for potions
+		int pBarX = 1352;
+		int pBarY = 333;
+
+		int rBarX = 1438;
+		int rBarY = 333;
+
+		int gBarX = 1522;
+		int gBarY = 333;
+
+		int potNum = 0;
+		///////////////////////////////////////////////////////////////////////////////
+		EZImage[] bars = new EZImage[15];
+
+		Sorcerer sorc = new Sorcerer("sorcerer.png", 50, 50, 40, 60, 5, walls, 448);
+		Potion pPot = new Potion("purplePotion.png", 360, 360, 1280, 800, walls, 448);
+		Potion rPot = new Potion("redPotion.png", 700, 360, 1280, 800, walls, 448);
+		Potion gPot = new Potion("greenPotion.png", 640, 700, 1280, 800, walls, 448);
+
+		//EZImage gameOver = EZ.addImage("defeat.png", EZ.getWindowWidth() / 2, EZ.getWindowHeight() / 2);
+		//gameOver.hide();
+
+		////////////////////////////////////////////////////////////////////////////
+		// Dragon Summons
+		enemy[] dragon = new enemy[8];
+
+		dragon[0] = new enemy("enemy.png", walls, 448, 320, 200, 55, 54, 1);
+		dragon[1] = new enemy("enemy.png", walls, 448, 960, 200, 55, 54, 1);
+		dragon[2] = new enemy("enemy.png", walls, 448, 320, 600, 55, 54, 1);
+		dragon[3] = new enemy("enemy.png", walls, 448, 960, 600, 55, 54, 1);
+
+		dragon[4] = new enemy("enemy.png", walls, 448, 640, 200, 55, 54, 1);
+		dragon[5] = new enemy("enemy.png", walls, 448, 640, 600, 55, 54, 1);
+		dragon[6] = new enemy("enemy.png", walls, 448, 320, 400, 55, 54, 1);
+		dragon[7] = new enemy("enemy.png", walls, 448, 960, 400, 55, 54, 1);
+		//////////////////////////////////////////////////////////////////////////////
+
+		/////////////////////////////////////////////////////////////////////////////
+
+		// enemy rGoblin = new enemy("goblin.png", walls, 448, 15, 790, 55, 54, 1);
+		// enemy GGoblin = new enemy("goblin.png", walls, 448, 640, 15, 55, 54, 1);
+		// enemy PGoblin = new enemy("goblin.png", walls, 448, 1265, 790, 55, 54, 1);
+
+		while (true) {
+
 			sorc.go();
 			pPot.go();
 			rPot.go();
 			gPot.go();
-			
-			if(pPot.isInside(sorc.x, sorc.y) ) {
-					pPot.collect();
-					bars[potNum] = EZ.addImage("bar.png", pBarX, pBarY);
-					pBarY -= 30;
-					potNum++;
-				}
-			if(pPot.caught) {
-			pPot.respawn();
+
+			for (int i = 0; i < 4; i++) {
+				dragon[i].go(sorc.x, sorc.y, 320, 200);
 			}
-			
-			
-			if(rPot.isInside(sorc.x, sorc.y) ) {
+
+			dragon[4].patrolVert();
+			dragon[5].patrolVert();
+			dragon[6].patrolHori();
+			dragon[7].patrolHori();
+
+			sorc.HPBar();
+			System.out.println(sorc.hp);
+
+			if (pPot.isInside(sorc.x, sorc.y)) {
+				pPot.collect();
+				bars[potNum] = EZ.addImage("bar.png", pBarX, pBarY);
+				pBarY -= 30;
+				potNum++;
+			}
+			if (pPot.caught) {
+				pPot.respawn();
+			}
+
+			if (rPot.isInside(sorc.x, sorc.y)) {
 				rPot.collect();
 				bars[potNum] = EZ.addImage("bar.png", rBarX, rBarY);
 				rBarY -= 30;
 				potNum++;
 			}
-			if(rPot.caught) {
+			if (rPot.caught) {
 				rPot.respawn();
 			}
-		
-			
-			if(gPot.isInside(sorc.x, sorc.y) ) {
+
+			if (gPot.isInside(sorc.x, sorc.y)) {
 				gPot.collect();
 				bars[potNum] = EZ.addImage("bar.png", gBarX, gBarY);
 				gBarY -= 30;
 				potNum++;
 			}
-			if(gPot.caught) {
+			if (gPot.caught) {
 				gPot.respawn();
 			}
-			
-		EZ.refreshScreen();}
-			
+
+			for (int i = 0; i < 8; i++) {
+				if (dragon[i].isInside(sorc.x, sorc.y)) {
+					sorc.hp -= 10;
+					System.out.println("check");
+				}
+			}
+
+			if (sorc.hp <= 0) {
+				background.hide();
+				sorc.Defeat();
+				for (int i = 0; i < 8; i++) {
+					dragon[i].Defeat();
+				}
+				rPot.Defeat();
+				pPot.Defeat();
+				gPot.Defeat();
+				//gameOver.show();
+			}
+
+			EZ.refreshScreen();
+
+		}
+
 	}
 }
-
