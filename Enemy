@@ -1,7 +1,7 @@
 import java.util.Random;
 import java.lang.Math;
 
-public class enemy {
+public class Enemy {
 
 	// Declare variables called enemyImage of type EZImage
 	private EZImage enemyImage;
