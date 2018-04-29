@@ -1,0 +1,101 @@
+
+public class Tree {
+	EZImage babyTree;
+	EZImage purpleTree;
+	EZImage redTree;
+	EZImage greenTree;
+	int posx = 0;
+	int posy = 0;
+	int treeState = BABY;
+
+	static final int BABY = 1;
+	static final int PURPLE = 2;
+	static final int RED = 3;
+	static final int GREEN = 4;
+
+	Tree(int x, int y) {
+		posx = x;
+		posy = y;
+		babyTree = EZ.addImage("bbytree.png", posx, posy);
+		purpleTree = EZ.addImage("tree3.png", posx, posy);
+		redTree = EZ.addImage("tree4.png", posx, posy);
+		greenTree = EZ.addImage("tree2.png", posx, posy);
+		hideTree();
+		babyTree.show();
+	}
+
+	void hideTree() {
+		babyTree.hide();
+		purpleTree.hide();
+		redTree.hide();
+		greenTree.hide();
+	}
+
+	void processStates() {
+		switch (treeState) {
+
+		case BABY:
+			if (EZInteraction.wasKeyPressed('z')) {
+				treeState = PURPLE;
+				// jumpCounter = 0;
+				hideTree();
+				purpleTree.show();
+			}
+			if (EZInteraction.wasKeyPressed('x')) {
+				treeState = RED;
+				// jumpCounter = 0;
+				hideTree();
+				redTree.show();
+			}
+			if (EZInteraction.wasKeyPressed('c')) {
+				treeState = GREEN;
+				// jumpCounter = 0;
+				hideTree();
+				greenTree.show();
+			}
+			break;
+		case PURPLE:
+			if (EZInteraction.wasKeyPressed('x')) {
+				treeState = RED;
+				// jumpCounter = 0;
+				hideTree();
+				redTree.show();
+			}
+			if (EZInteraction.wasKeyPressed('c')) {
+				treeState = GREEN;
+				// jumpCounter = 0;
+				hideTree();
+				greenTree.show();
+			}
+			break;
+		case RED:
+			if (EZInteraction.wasKeyPressed('z')) {
+				treeState = PURPLE;
+				// jumpCounter = 0;
+				hideTree();
+				purpleTree.show();
+			}
+			if (EZInteraction.wasKeyPressed('c')) {
+				treeState = GREEN;
+				// jumpCounter = 0;
+				hideTree();
+				greenTree.show();
+			}
+			break;
+		case GREEN:
+			if (EZInteraction.wasKeyPressed('z')) {
+				treeState = PURPLE;
+				// jumpCounter = 0;
+				hideTree();
+				purpleTree.show();
+			}
+			if (EZInteraction.wasKeyPressed('x')) {
+				treeState = RED;
+				// jumpCounter = 0;
+				hideTree();
+				redTree.show();
+			}
+			break;
+		}
+	}
+}
