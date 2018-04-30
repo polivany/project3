@@ -1,5 +1,11 @@
 import java.util.Random;
 
+/*
+*Created by Ray Cochrane 2018
+ */
+
+
+
 public class Potion {
 
 	private EZImage potionPicture;
