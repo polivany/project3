@@ -1,6 +1,9 @@
 import java.io.FileReader;
 import java.util.Scanner;
-
+/*
+ * Compiled By Ray and Mikhail for Project 3
+ * 2018
+ */
 public class Master {
 	static int buttonPressed = 0;
 
