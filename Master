@@ -1,6 +1,5 @@
 import java.io.FileReader;
 import java.util.Scanner;
-import java.util.Random;
 
 public class Master {
 	static int buttonPressed = 0;
@@ -36,14 +35,15 @@ public class Master {
 			}
 
 		}
-		background.pushToBack();
-		EZ.refreshScreen();
-		fileScanner.close();
-		Tree myTree = new Tree(640, 380);
-		EZImage end = EZ.addImage("treefinal.png", EZ.getWindowWidth() / 2, EZ.getWindowHeight() / 2);
-		end.hide();
-		EZImage cont = EZ.addImage("contButt.png", 200, 75);
-		cont.hide();
+		background.pushToBack();// pushes background to back
+		EZ.refreshScreen();// refreshes screen constantly allowing new images and movement "" to be
+							// generated
+		fileScanner.close();// closes file scanner
+
+		Tree myTree = new Tree(640, 380);// new tree object for visual queues during game
+
+		EZSound GameMusic = EZ.addSound("music.wav");// music used for gameplay
+		EZSound Uta = EZ.addSound("TenshiNoUta.wav");// angels singing background for end of game
 		/////////////////////////////////////////////////////////////////////////////////
 		// Variables needed for potions
 		int pBarX = 1352;
@@ -60,6 +60,12 @@ public class Master {
 		int pPotNum = 0;
 		int rPotNum = 0;
 		int hpCollection = 0;
+
+		boolean gameActive = false;// allows game to shuffle through states such as beginning and defeat
+		
+		int gameSwitch = -1;// variable that switches us between game states
+		int musicQ = 0;
+		int press = 0;
 		///////////////////////////////////////////////////////////////////////////////
 		EZImage[] bars = new EZImage[15];
 
@@ -67,12 +73,31 @@ public class Master {
 		Potion pPot = new Potion("purplePotion.png", 360, 360, 1280, 800, walls, 448);
 		Potion rPot = new Potion("redPotion.png", 700, 360, 1280, 800, walls, 448);
 		Potion gPot = new Potion("greenPotion.png", 640, 700, 1280, 800, walls, 448);
+
 		String[] finalTree = { "tg1.png", "tg2.png", "tg3.png", "tp1.png", "tp2.png", "tp3.png", "tr1.png", "tr2.png",
-				"tr3.png" };
-		FinalTree fTree = new FinalTree(finalTree, 1500, 640, 380);
-		// EZImage gameOver = EZ.addImage("defeat.png", EZ.getWindowWidth() / 2,
-		// EZ.getWindowHeight() / 2);
-		// gameOver.hide();
+				"tr3.png" };// string array that allows us to change the tree on display during program
+
+		FinalTree fTree = new FinalTree(finalTree, 1500, 640, 380);// final tree object that allows us to show the
+																	// ending tree animation as well as
+
+		/////////////////////////////////////////////////////////////////////////////////////////////////////////
+		// Utility Images
+		EZImage end = EZ.addImage("treefinal.png", EZ.getWindowWidth() / 2, EZ.getWindowHeight() / 2);// end screen when
+																										// you win
+		end.hide();// hides ending screen for later use
+
+		EZImage cont = EZ.addImage("contButt.png", 200, 75);// continue button that directs player to next screen
+		cont.hide();// hides button for later use
+
+		EZImage gameOver = EZ.addImage("gameOver.png", EZ.getWindowWidth() / 2, EZ.getWindowHeight() / 2);
+		gameOver.hide();
+
+		EZImage intro = EZ.addImage("intro.png", EZ.getWindowWidth() / 2, EZ.getWindowHeight() / 2);
+		
+		EZImage Title = EZ.addImage("pqtitle.png", EZ.getWindowWidth()/2, 175);
+
+		EZImage directions = EZ.addImage("direct.png", EZ.getWindowWidth() / 2, EZ.getWindowHeight() / 2);
+		directions.hide();
 
 		////////////////////////////////////////////////////////////////////////////
 		// Dragon Summons
@@ -91,133 +116,204 @@ public class Master {
 
 		/////////////////////////////////////////////////////////////////////////////
 
-		// enemy rGoblin = new enemy("goblin.png", walls, 448, 15, 790, 55, 54, 1);
-		// enemy GGoblin = new enemy("goblin.png", walls, 448, 640, 15, 55, 54, 1);
-		// enemy PGoblin = new enemy("goblin.png", walls, 448, 1265, 790, 55, 54, 1);
 
 		while (true) {
-			
-			sorc.go();
-			pPot.go();
-			rPot.go();
-			gPot.go();
-
-			for (int i = 0; i < 4; i++) {
-				dragon[i].go(sorc.x, sorc.y, 320, 200);
-			}
-
-			dragon[4].patrolVert();
-			dragon[5].patrolVert();
-			dragon[6].patrolHori();
-			dragon[7].patrolHori();
-
-			sorc.HPBar();
-
-			if (pPot.isInside(sorc.x, sorc.y)) {
-				pPot.collect();
-				bars[potNum] = EZ.addImage("bar.png", pBarX, pBarY);
-				pBarY -= 30;
-				potNum++;
-				pPotNum++;
-				hpCollection++;
-			}
-			if (pPot.caught) {
-				pPot.respawn();
-			}
-
-			if (rPot.isInside(sorc.x, sorc.y)) {
-				rPot.collect();
-				bars[potNum] = EZ.addImage("bar.png", rBarX, rBarY);
-				rBarY -= 30;
-				potNum++;
-				rPotNum++;
-				hpCollection++;
-			}
-			if (rPot.caught) {
-				rPot.respawn();
-			}
-
-			if (gPot.isInside(sorc.x, sorc.y)) {
-				gPot.collect();
-				bars[potNum] = EZ.addImage("bar.png", gBarX, gBarY);
-				gBarY -= 30;
-				potNum++;
-				gPotNum++;
-				hpCollection++;
-			}
-			if (gPot.caught) {
-				gPot.respawn();
+			if (EZInteraction.wasMouseLeftButtonPressed()) {
+				gameSwitch++;
 			}
 			
-			if(sorc.hp < 600) {
-				if(hpCollection == 2) {
-					sorc.hp += 100;
-					hpCollection = 0;
-				}
+			if (gameSwitch == -1) {
+				GameMusic.play();
+				gameSwitch++;
 			}
 
-			for (int i = 0; i < 8; i++) {
-				if (dragon[i].isInside(sorc.x, sorc.y)) {
-					sorc.hp -= 5;
-				}
+			if (gameSwitch == 1) {
+				intro.hide();
+				Title.hide();
+				directions.show();
+				directions.pullToFront();
 			}
 
-			if (sorc.hp <= 0) {
-				background.hide();
-				sorc.Defeat();
-				for (int i = 0; i < 8; i++) {
-					dragon[i].Defeat();
-				}
-				rPot.Defeat();
-				pPot.Defeat();
-				gPot.Defeat();
-				// gameOver.show();
+			if (gameSwitch == 2) {
+				directions.hide();
+				gameActive = true;
 			}
-
-			if (pPotNum == 5) {
-				if (EZInteraction.wasKeyPressed('z')) {
-					myTree.processStates();
-					buttonPressed++;
-					pPotNum = 0;
-				}
-			}
-
-			if (rPotNum == 5) {
-				if (EZInteraction.wasKeyPressed('x')) {
-					myTree.processStates();
-					buttonPressed ++;
-					rPotNum = 0;
-				}
-			}
-
-			if (gPotNum == 5) {
-				if (EZInteraction.wasKeyPressed('c')) {
-					myTree.processStates();
-					buttonPressed++;
-					gPotNum = 0;
-				}
-			}
-
-			if (buttonPressed >= 3) {
-				for (int i = 0; i < 8; i++) {
-					dragon[i].Defeat();
-				}
-				sorc.hp = 100000;
-				myTree.hideTree();
-				fTree.go();
-				cont.show();
-				
-				if(EZInteraction.wasMouseLeftButtonReleased()) {
-					fTree.hide();
-					end.show();
-					end.pullToFront();
-				}
-			}
-			
 			
 			EZ.refreshScreen();
+			
+			while (gameActive) {// activates real ingame functions
 
+				/////////////////////////////////////////////////////////////////////////////////////////////////////////////
+				// element movement and game startup functions
+				sorc.go();// allows the sorcerer and potions to begin the movement functions based on
+							// written commands
+				pPot.go();
+				rPot.go();
+				gPot.go();
+
+
+				for (int i = 0; i < 4; i++) { // shuffles through first half of dragon array giving them commands
+					dragon[i].go(sorc.x, sorc.y, 320, 200); // to stay within their bounds and hunt the sorcerer if he
+															// enters the area
+				}
+
+				dragon[4].patrolVert();// sets up patrol dragons
+				dragon[5].patrolVert();
+				dragon[6].patrolHori();
+				dragon[7].patrolHori();
+
+				sorc.HPBar();// updates hp of the sorcerer
+				////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+				/////////////////////////////////////////////////////////////////////////////////////////////////////////////
+				// potion management
+
+				if (pPot.isInside(sorc.x, sorc.y)) {						//sets conditons for catching the purple potion and also affects the collection bar
+					pPot.collect();
+					bars[potNum] = EZ.addImage("bar.png", pBarX, pBarY);
+					pBarY -= 30;
+					potNum++;
+					pPotNum++;
+					hpCollection++;
+				}
+				if (pPot.caught) {
+					pPot.respawn();
+				}
+
+				if (rPot.isInside(sorc.x, sorc.y)) {						//sets conditons for catching the red potion and also affects the collection bar
+					rPot.collect();
+					bars[potNum] = EZ.addImage("bar.png", rBarX, rBarY);
+					rBarY -= 30;
+					potNum++;
+					rPotNum++;
+					hpCollection++;
+				}
+				if (rPot.caught) {
+					rPot.respawn();
+				}
+
+				if (gPot.isInside(sorc.x, sorc.y)) {						//sets conditons for catching the green potion and also affects the collection bar
+					gPot.collect();
+					bars[potNum] = EZ.addImage("bar.png", gBarX, gBarY);
+					gBarY -= 30;
+					potNum++;
+					gPotNum++;
+					hpCollection++;
+				}
+				if (gPot.caught) {
+					gPot.respawn();
+				}
+				//////////////////////////////////////////////////////////////////////////////////////////////////////
+
+				//////////////////////////////////////////////////////////////////////////////////////////////////////
+				// HP management
+
+				if (sorc.hp < 600) {						//sets condition for hp gain only when sorcerer has actually lose hp
+					if (hpCollection == 2) {				
+						sorc.hp += 100;
+						hpCollection = 0;
+					}
+				}
+
+				for (int i = 0; i < 8; i++) {				//sets condition for hp loss
+					if (dragon[i].isInside(sorc.x, sorc.y)) {
+						sorc.hp -= 5;
+					}
+				}
+
+				////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+				////////////////////////////////////////////////////////////////////////////////////////////////////////
+				// tree evolution functions
+
+				if (pPotNum == 5) {// if player fills purple potion bar (5 potions), allows the player to change
+									// the image once to grow the tree to a different form
+					if (EZInteraction.wasKeyPressed('z')) {
+						myTree.processStates();
+						buttonPressed++;
+						pPotNum = 0;
+					}
+				}
+
+				if (rPotNum == 5) {// if player fills red potion bar (5 potions), allows the player to change the
+									// image once to grow the tree to a different form
+					if (EZInteraction.wasKeyPressed('x')) {
+						myTree.processStates();
+						buttonPressed++;
+						rPotNum = 0;
+					}
+				}
+
+				if (gPotNum == 5) {// if player fills green potion bar (5 potions), allows the player to change the
+									// image once to grow the tree to a different form
+					if (EZInteraction.wasKeyPressed('c')) {
+						myTree.processStates();
+						buttonPressed++;
+						gPotNum = 0;
+					}
+				}
+				/////////////////////////////////////////////////////////////////////////////////////////////////////
+				
+				
+				/////////////////////////////////////////////////////////////////////////////////////////////////////
+				// win conditions and loss conditions
+				if (buttonPressed >= 3) {							//sets condition for when all potions are activated
+					for (int i = 0; i < 8; i++) {					//hides all dragons
+						dragon[i].Defeat();
+					}
+					sorc.hp = 100000;								//sets hp to 100000 in case the sorcerer finishes the game on top of a dragon
+					
+ 					myTree.hideTree();								//hides original tree
+					fTree.go();										//shows final tree
+					cont.show();
+					
+					if (EZInteraction.wasMouseLeftButtonPressed()) {//waits for mouse to be pressed before showing end screen
+						fTree.hide();
+						end.show();
+						end.pullToFront();
+						
+						if(musicQ == 0) {							//allows music to play just once
+						GameMusic.stop();
+						Uta.play();
+						musicQ++;
+					}
+					}
+				}
+
+				if (sorc.hp <= 0) {									//sets condition for when sorcerer dies
+					
+					
+					gameOver.show();								//shows defeat screen
+					
+					
+					myTree.hideTree();								//hides original tree
+
+					for (int i = 0; i < 8; i++) {					//hides dragons
+						dragon[i].Defeat();
+					}
+					
+					rPot.Defeat();									//hides potions
+					pPot.Defeat();
+					gPot.Defeat();
+					
+					if (EZInteraction.wasMouseLeftButtonPressed()) {//waits for mouse to be pressed to move to next screen
+						fTree.hide();
+						end.show();
+						end.pullToFront();
+						
+						if(musicQ == 0) {
+							GameMusic.stop();						//stops game music and allows the new end screen music to play
+							Uta.play();
+							musicQ++;
+						}
+					}
+				}
+				/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+				EZ.refreshScreen();
+			}
 		}
 
 	}
 }
+	
