@@ -1,7 +1,14 @@
 import java.util.Random;
 import java.lang.Math;
 
-public class Enemy {
+/*
+*Created by Ray Cochrane 2018
+ */
+
+
+
+
+public class enemy {
 
 	// Declare variables called enemyImage of type EZImage
 	private EZImage enemyImage;
@@ -23,10 +30,9 @@ public class Enemy {
 
 	int numWalls;
 
-	Enemy(String filename, EZImage walls[], int wallCount, int spawnX, int spawnY, int Width, int Height, int steps) {
+	enemy(String filename, EZImage walls[], int wallCount, int spawnX, int spawnY, int Width, int Height, int steps) {
 		
 		enemyImage = EZ.addImage(filename, posx, posy);// load enemy picture
-		Random randomGenerator = new Random(); // generates random position for sentinel
 		posx = spawnX;
 		posy = spawnY;
 		permX = spawnX;
@@ -61,11 +67,11 @@ public class Enemy {
 				direction + spriteHeight);
 	}
 
-	public int getXCenter() {
+	public int getXCenter() {//gives center x coordinate of element
 		return enemyImage.getXCenter();
 	}
 
-	public int getYCenter() {
+	public int getYCenter() {//gives center y coordinate of element
 		return enemyImage.getYCenter();
 	}
 
@@ -77,8 +83,9 @@ public class Enemy {
 		}
 		return false;
 	}
-
-	public void moveLeft(int step) { // move functions
+	///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	//move functions
+	public void moveLeft(int step) {
 		x = x - step;
 
 		direction = spriteHeight;
@@ -134,14 +141,22 @@ public class Enemy {
 		counter++;
 		setImagePosition(x, y);
 	}
-
+	
+	//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	
+	
+	
+	
+	//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	//combines movement functions as well as collision checker in order to move the enemy properly. In this case, if the sorcerer is within the bounds of the enemy, the enemy will only chase at that point
+	//Otherwise, the enemy will roam in its area aimlessly
+	
 	void go(double characterX, double characterY, double rangeX, double rangeY) { // function that tells enemy which way
 																					// to move,
-		// takes in x,y parameters of character
-		// if the x position is greater than character, enemy go left 3
-
 		if (Math.hypot(characterX - permX, characterY - permY) < 320) {
 
+			// takes in x,y parameters of character
+			// if the x position is greater than character, enemy go left 3
 			if (x > characterX) {
 				if (!checkCollision(-3, 0))
 					moveLeft(3);
@@ -289,12 +304,12 @@ public class Enemy {
 		}
 		}
 	}
-	public void Defeat() {
+	public void Defeat() {//hides the enemy in the case of end game where the dragons cannot be showing
 		enemyImage.hide();
 		enemyImage.translateTo(0, 0);
 	}
 	
-	public boolean isInside(int posx, int posy) {
+	public boolean isInside(int posx, int posy) {//checks to see if the enemy is inside a particular elemt. If so, return true.
 			return enemyImage.isPointInElement(posx, posy);
 	}
 }
