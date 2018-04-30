@@ -58,6 +58,9 @@ public class Potion {
 		setDestination(ranx, rany);
 	}
 
+	
+	//////////////////////////////////////////////////////////////////////////////
+	//Potions only move randomly throughout the map as they please. This works by giving random values, if the value is greater than or less than the current position, it will move towards it.
 	public void go() {
 
 		if (x > destx) {
@@ -93,7 +96,11 @@ public class Potion {
 		}
 
 	}
+	///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+	
+	//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	//moves potion image as needed throughout movement
 	public void setPosition(int posx, int posy) {
 		x = posx;
 		y = posy;
@@ -103,7 +110,11 @@ public class Potion {
 	private void setPotionImagePosition(int posx, int posy) {
 		potionPicture.translateTo(posx, posy);
 	}
-
+	//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	
+	
+	//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	//allows the potion to move based on the given parameters of step or "pixels moved"
 	public void moveLeft(int step) {
 		x = x - step;
 		setPotionImagePosition(x, y);
@@ -123,14 +134,21 @@ public class Potion {
 		y = y + step;
 		setPotionImagePosition(x, y);
 	}
-
+	//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	
+	//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	//when potions are caught they will randomly get a new position to move towards
 	public void caughtPotion() {
 		Random randomGenerator = new Random();
 		x = randomGenerator.nextInt(rangex);
 		y = randomGenerator.nextInt(rangey);
 		setPotionImagePosition(x, y);
 	}
-
+	//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	
+	
+	//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	//checks to see if the potion is on a certain point
 	public boolean isInside(int posx, int posy) {
 
 		if (caught == true)
@@ -138,24 +156,29 @@ public class Potion {
 		else
 			return potionPicture.isPointInElement(posx, posy);
 	}
-
+	/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	
+	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	//each potion can only be caught a certain amount of times before they will stop respawning. This allowed for us to limit the amount collected each round.
 	public void collect() {
 		potionPicture.hide();
 		catchCount--;
 		caught = true;
 	}
 
-	public void respawn() {
+	public void respawn() {//potion will only respawn if the the available respawns (in this case catchCount) has not hit 0
 		if (catchCount > 0) {
 			caughtPotion();
 			caught = false;
 			potionPicture.show();
 		} else
 			return;
-
 	}
+	//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	
-	public void Defeat() {
+	
+	
+	public void Defeat() {//hides the potion in the case of a win or a loss
 		potionPicture.hide();
 	}
 
